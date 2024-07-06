@@ -29,18 +29,18 @@ const hybrid =
   singlePhase:
   {
     singleInverter: 1.0,
-    X1_Hybrid_G4: // 220V L-N
+    X1_G4: // 220V L-N
     { 
       modelPrefix: "X1-HYBRID-", modelSuffix: "-D", // Full Model name: Prefix-Nominal Power-Suffix
-      nominalPowerkW: ["3.0", "3.7", "4.6", "5.0", "6.0", "7.5"] ,
+      nominalPowerKW: ["3.0", "3.7", "4.6", "5.0", "6.0", "7.5"] ,
       maxEPSParallel: 2.0,
       batteryChannels: 1
     }, 
 
-    X1_Hybrid_SPT: //110V L-N & 220V L-L
+    X1_SPT: //110V L-N & 220V L-L
     { 
       modelPrefix: "X1-SPT-", modelSuffix: "-D", // Full Model name: Prefix-Nominal Power-Suffix
-      nominalPowerkW: ["3.0", "3.6", "6.0", "7.0"],
+      nominalPowerKW: ["3.0", "3.6", "6.0", "7.0"],
       maxEPSParallel: 2.0,
       batteryChannels: 1 
     }, 
@@ -49,27 +49,23 @@ const hybrid =
 
   threePhase:
   {
-    X3_Hybrid_G4:
+    X3_G4:
     {
-      modelPrefix: "X1-HYBRID-", modelSuffix: "-D",
+      modelPrefix: "X3-HYBRID-", modelSuffix: "-D",
       nominalPowerKW: ["5.0", "6.0", "8.0", "10.0", "12.0", "15.0"],
-      maxEPSParallel: 10.0
+      maxEPSParallel: 10.0, 
+      batteryChannels: 1
+    },
+
+    X3_G4_LV:
+    {
+      modelPrefix: "X3-HYBRID-", modelSuffix: "-LV",
+      nominalPowerKW: ["5.0", "8.3"],
+      maxEPSParallel: 10.0, 
       batteryChannels: 1
     }
+
   }
- 
- 
-  
-
-
-};
-
-const threePhaseInverters =
-{
-  X3_Hybrid_G4: ["5.0", "6.0", "8.0", "10.0", "12.0", "15.0"], //380V
-  X3_Hybrid_G4_LV: ["5.0", "8.3"],  //220V
-  X3_Hybrid_G4_Prefix: "X3-HYBRID-", X3_Hybrid_G4_Suffix: "-D",
-  maxEPSParallel: 10.0
 };
 
 
@@ -78,7 +74,7 @@ function selectInverter(loadsPowerKW, ratedEnergyKWH, gridType){
 
     case grid.singlePhase: // single-phase 220V
       selectSinglePhaseInverter(loadsPowerKW, ratedEnergyKWH);
-      selectBatSinglePhaseInverter(ratedEnergyKWH, hybrid.singlePhase.X1_Hybrid_G4, highVoltageBatteries.T58);
+      selectBatSinglePhaseInverter(ratedEnergyKWH, hybrid.singlePhase.X1_G4, highVoltageBatteries.T58);
     break;
 
     case grid.splitPhase: // split-phase 220V 
@@ -98,7 +94,7 @@ function selectSinglePhaseInverter(loadsPowerKW, ratedEnergyKWH, inverter)
 {
   let useInvertersInParallel = true;
 
-  inverter.nominalPowerkW.every(
+  inverter.nominalPowerKW.every(
     function (powerKW)
     {
       if( powerKW >= loadsPowerKW){
@@ -114,7 +110,7 @@ function selectSinglePhaseInverter(loadsPowerKW, ratedEnergyKWH, inverter)
   
   if(useInvertersInParallel == false) return;
   
-  inverter.nominalPowerkW.every( 
+  inverter.nominalPowerKW.every( 
   function (powerKW)
   {
     if( (powerKW * inverter.maxEPSParallel) >= loadsPowerKW )
@@ -144,7 +140,7 @@ const battery =
     {
       model: "T58",
       standardPowerKW: 2.8, nominalEnergyKWH: 5.8, usefullEnergyKWH: 5.1,
-      X1_Hybrid_G4_min: 1, X1_Hybrid_G4_Max: 3,
+      X1_G4_min: 1, X1_G4_Max: 3,
       X3_Hybrid_G4_min: 2, X3_Hybrid_G4_Max: 4
     },
 
@@ -152,7 +148,7 @@ const battery =
     {
       model: "T30",
       standardPowerKW: 2.5, nominalEnergyKWH: 3.0, usefullEnergyKWH: 2.8,
-      X1_Hybrid_G4_min: 1, X1_Hybrid_G4_Max: 4,
+      X1_G4_min: 1, X1_G4_Max: 4,
       X3_Hybrid_G4_min: 2, X3_Hybrid_G4_Max: 4
     }
   }
@@ -178,7 +174,7 @@ function selectBatSinglePhaseInverter(loadsEnergyKWH, inverter, battery)
   
   maxBatEnergyKWH(inverter, bmsParallelBoxII, battery);
 
-  if(numBatteries > battery.X1_Hybrid_G4_Max && ( numBatteries <= (battery.X1_Hybrid_G4_Max * bmsParallelBoxII.batteryChannels) )){
+  if(numBatteries > battery.X1_G4_Max && ( numBatteries <= (battery.X1_G4_Max * bmsParallelBoxII.batteryChannels) )){
     solution.bmsPBoxModel = bmsParallelBoxII.model;
     solution.bmsPBoxCount = inverter.batteryChannels; 
     return true;
@@ -195,16 +191,16 @@ function maxBatEnergyKWH(inverter, bmsBoxII, battery){
   
   switch(inverter)
   {
-    case hybrid.singlePhase.X1_Hybrid_G4:
-      maxSeriesBatteries = battery.X1_Hybrid_G4_Max; 
+    case hybrid.singlePhase.X1_G4:
+      maxSeriesBatteries = battery.X1_G4_Max; 
     break;
-    case hybrid.singlePhase.X3_Hybrid_G4:
+    case hybrid.singlePhase.X3_G4:
       maxSeriesBatteries = battery.X3_Hybrid_G4_Max;
     default:
   }
   if(battery == battery.highVoltage.T58)
     return maxSeriesBatteries * bmsBoxII.batteryChannels * inverter.batteryChannels * battery.usefullEnergyKWH;
   else
-        return maxSeriesBatteries * inverter.batteryChannels * battery.usefullEnergyKWH;    
+    return maxSeriesBatteries * inverter.batteryChannels * battery.usefullEnergyKWH;    
 }
 
