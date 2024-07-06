@@ -1,4 +1,7 @@
-
+$(window).on('load', function() { 
+   //$('#warningModal').modal('show'); 
+   console.log("caraca");
+} );
 
 //The entire solution to be calculated
 var solution = 
