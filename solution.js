@@ -1,4 +1,4 @@
-<script>
+
 
 //The entire solution to be calculated
 var solution = 
@@ -205,5 +205,3 @@ function maxBatEnergyKWH(inverter, bmsBoxII, battery){
         return maxSeriesBatteries * inverter.batteryChannels * battery.usefullEnergyKWH;    
 }
 
-
-</script>
