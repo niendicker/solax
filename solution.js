@@ -139,7 +139,7 @@ const battery =
     T58:
     {
       model: "T58",
-      standardPowerKW: 2.8, nominalEnergyKWH: 5.8, usefullEnergyKWH: 5.1,
+      standardPowerKW: 2.8, nominalEnergyKWH: 5.8, usefulEnergyKWH: 5.1,
       X1_G4_min: 1, X1_G4_Max: 3,
       X3_Hybrid_G4_min: 2, X3_Hybrid_G4_Max: 4
     },
@@ -147,7 +147,7 @@ const battery =
     T30:
     {
       model: "T30",
-      standardPowerKW: 2.5, nominalEnergyKWH: 3.0, usefullEnergyKWH: 2.8,
+      standardPowerKW: 2.5, nominalEnergyKWH: 3.0, usefulEnergyKWH: 2.8,
       X1_G4_min: 1, X1_G4_Max: 4,
       X3_Hybrid_G4_min: 2, X3_Hybrid_G4_Max: 4
     }
@@ -170,7 +170,7 @@ const bmsParallelBoxII =
 *******************************************************************/
 function selectBatSinglePhaseInverter(loadsEnergyKWH, inverter, battery)
 {
-  let numBatteries = Math.ceil( loadsEnergyKWH / battery.usefullEnergyKWH );
+  let numBatteries = Math.ceil( loadsEnergyKWH / battery.usefulEnergyKWH );
   
   maxBatEnergyKWH(inverter, bmsParallelBoxII, battery);
 
@@ -194,13 +194,13 @@ function maxBatEnergyKWH(inverter, bmsBoxII, battery){
     case hybrid.singlePhase.X1_G4:
       maxSeriesBatteries = battery.X1_G4_Max; 
     break;
-    case hybrid.singlePhase.X3_G4:
+    case hybrid.threePhase.X3_G4:
       maxSeriesBatteries = battery.X3_Hybrid_G4_Max;
     default:
   }
   if(battery == battery.highVoltage.T58)
-    return maxSeriesBatteries * bmsBoxII.batteryChannels * inverter.batteryChannels * battery.usefullEnergyKWH;
+    return maxSeriesBatteries * bmsBoxII.batteryChannels * inverter.batteryChannels * battery.usefulEnergyKWH;
   else
-    return maxSeriesBatteries * inverter.batteryChannels * battery.usefullEnergyKWH;    
+    return maxSeriesBatteries * inverter.batteryChannels * battery.usefulEnergyKWH;    
 }
 
