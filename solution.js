@@ -12,7 +12,7 @@ var solution =
   mateboxModel    : "", mateboxCount    : 0, // Matebox 
   epsPBoxModel    : "", epsPBoxCount    : 0, // EPS Parallel Box
   smartMeterModel : "", smartMeterCount : 0, // Smart Meter  
-  evcModel        : "", evcCount        : 0  // Electric Veichle Charger
+  evcModel        : "", evcCount        : 0  // Electric Vehicle Charger
 }
 
 //======================= GRID STANDARDS ========================
