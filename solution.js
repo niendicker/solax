@@ -1,3 +1,5 @@
+<script>
+
 $(window).on('load', function() { 
    //$('#warningModal').modal('show'); 
    console.log("caraca");
@@ -74,7 +76,7 @@ function selectInverter(loadsPowerKW, ratedEnergyKWH, gridType){
 
     case grid.singlePhase: // single-phase 220V
       selectSinglePhaseInverter(loadsPowerKW, ratedEnergyKWH);
-      selectBatSinglePhaseInverter(ratedEnergyKWH, hybrid.singlePhase.X1_G4, highVoltageBatteries.T58);
+      batteryForInverter(ratedEnergyKWH, hybrid.singlePhase.X1_G4, highVoltageBatteries.T58);
     break;
 
     case grid.splitPhase: // split-phase 220V 
@@ -92,14 +94,11 @@ function selectInverter(loadsPowerKW, ratedEnergyKWH, gridType){
 *******************************************************************/
 function selectSinglePhaseInverter(loadsPowerKW, ratedEnergyKWH, inverter)
 {
-  let useInvertersInParallel = true;
-
   inverter.nominalPowerKW.every(
     function (powerKW)
     {
       if( powerKW >= loadsPowerKW)
       {
-        useInvertersInParallel = false;
         solution.inverterModel = inverter.modelPrefix + powerKW + inverter.modelSuffix;
         solution.inverterCount = inverter.singleInverter;
         console.log(solution);
@@ -109,7 +108,7 @@ function selectSinglePhaseInverter(loadsPowerKW, ratedEnergyKWH, inverter)
     }
   );
   
-  if(useInvertersInParallel == false) return;
+  if(solution.inverterCount == inverter.singleInverter) return;
   
   inverter.nominalPowerKW.every( 
   function (powerKW)
@@ -180,7 +179,7 @@ const bmsParallelBoxII =
  * 
  * 
 *******************************************************************/
-function selectBatSinglePhaseInverter(loadsEnergyKWH, inverter, battery)
+function batteryForInverter(loadsEnergyKWH, inverter, battery)
 {  
   if(maxBatEnergyKWH(inverter, bmsParallelBoxII, battery) > loadsEnergyKWH)
   {
@@ -214,9 +213,10 @@ function maxBatEnergyKWH(inverter, bmsBoxII, battery){
       maxSeriesBatteries = battery.X3_Hybrid_G4_Max;
     default:
   }
-  if(battery == battery.highVoltage.T58)
+  if(bmsBoxII.compatibleWith == battery)
     return maxSeriesBatteries * bmsBoxII.batteryChannels * inverter.batteryChannels * battery.usefulEnergyKWH;
   else
     return maxSeriesBatteries * inverter.batteryChannels * battery.usefulEnergyKWH;    
 }
 
+</script>
