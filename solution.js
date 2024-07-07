@@ -15,7 +15,7 @@ var solution =
   evcModel        : "", evcCount        : 0  // Electric Vehicle Charger
 }
 
-//======================= GRID STANDARDS ========================
+//======================= GRID STANDARDS *********************
 const grid = 
 {
   singlePhase: 1, splitPhase: 2, threePhase: 3,
@@ -23,7 +23,7 @@ const grid =
   frequency_60Hz: 60 
 }
 
-//========================== INVERTER ===========================
+//*********************== INVERTER *********************===
 const hybrid = 
 {
   singlePhase:
@@ -97,7 +97,8 @@ function selectSinglePhaseInverter(loadsPowerKW, ratedEnergyKWH, inverter)
   inverter.nominalPowerKW.every(
     function (powerKW)
     {
-      if( powerKW >= loadsPowerKW){
+      if( powerKW >= loadsPowerKW)
+      {
         useInvertersInParallel = false;
         solution.inverterModel = inverter.modelPrefix + powerKW + inverter.modelSuffix;
         solution.inverterCount = inverter.singleInverter;
@@ -130,26 +131,37 @@ function selInverter2P(loadsPowerKW, ratedEnergyKWH){
 
 }
 
-//========================== BATTERY ===========================
+/*********************** BATTERY **********************
+ * https://www.solaxpower.com/products/t-bat-sys-hv-3-0/
+ * https://www.solaxpower.com/products/t-bat-sys-hv-5-8/
+ */
 
 const battery = 
 {
   highVoltage: 
   { 
-    T58:
+     T30:
     {
-      model: "T58",
-      standardPowerKW: 2.8, nominalEnergyKWH: 5.8, usefulEnergyKWH: 5.1,
-      X1_G4_min: 1, X1_G4_Max: 3,
-      X3_Hybrid_G4_min: 2, X3_Hybrid_G4_Max: 4
+      nickname: "T30",
+      standardPowerKW : 2.5, 
+      nominalEnergyKWH: 3.0, 
+      usefulEnergyKWH : 2.8,
+      X1_G4_min: 1,
+      X1_G4_Max: 4,
+      X3_G4_min: 2,
+      X3_G4_Max: 4
     },
 
-    T30:
+    T58:
     {
-      model: "T30",
-      standardPowerKW: 2.5, nominalEnergyKWH: 3.0, usefulEnergyKWH: 2.8,
-      X1_G4_min: 1, X1_G4_Max: 4,
-      X3_Hybrid_G4_min: 2, X3_Hybrid_G4_Max: 4
+      nickname: "T58",
+      standardPowerKW: 2.8, 
+      nominalEnergyKWH: 5.8, 
+      usefulEnergyKWH: 5.1,
+      X1_G4_min: 1, 
+      X1_G4_Max: 3,
+      X3_G4_min: 2, 
+      X3_G4_Max: 4
     }
   }
 };
@@ -159,7 +171,7 @@ const battery =
 */
 const bmsParallelBoxII = 
 {
-  model: "BMS-Parallel Box-II",
+  nickname: "BMS-Parallel Box-II",
   compatibleWith: battery.highVoltage.T58,
   batteryChannels: 2
 }
@@ -169,17 +181,21 @@ const bmsParallelBoxII =
  * 
 *******************************************************************/
 function selectBatSinglePhaseInverter(loadsEnergyKWH, inverter, battery)
-{
-  let numBatteries = Math.ceil( loadsEnergyKWH / battery.usefulEnergyKWH );
-  
-  maxBatEnergyKWH(inverter, bmsParallelBoxII, battery);
-
-  if(numBatteries > battery.X1_G4_Max && ( numBatteries <= (battery.X1_G4_Max * bmsParallelBoxII.batteryChannels) )){
-    solution.bmsPBoxModel = bmsParallelBoxII.model;
-    solution.bmsPBoxCount = inverter.batteryChannels; 
-    return true;
+{  
+  if(maxBatEnergyKWH(inverter, bmsParallelBoxII, battery) > loadsEnergyKWH)
+  {
+    return false;
   }
-  return false;
+
+  let numBatteries = Math.ceil( loadsEnergyKWH / battery.usefulEnergyKWH );
+
+  if(numBatteries > battery.X1_G4_Max && ( numBatteries <= (battery.X1_G4_Max * bmsParallelBoxII.batteryChannels) ))
+  {
+    solution.bmsPBoxModel = bmsParallelBoxII.nickname;
+    solution.bmsPBoxCount = inverter.batteryChannels; 
+    return true; 
+  }
+  return true;
 }
 
 /******************************************************************
