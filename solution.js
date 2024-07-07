@@ -1,4 +1,4 @@
-<script>
+
 
 $(window).on('load', function() { 
    //$('#warningModal').modal('show'); 
@@ -219,4 +219,3 @@ function maxBatEnergyKWH(inverter, bmsBoxII, battery){
     return maxSeriesBatteries * inverter.batteryChannels * battery.usefulEnergyKWH;    
 }
 
-</script>
